@@ -1,13 +1,13 @@
 # Draw and save as image/jpeg
-Question - How to resize the canvas?
+Question - **How to resize the canvas?**
 
 Answer - Resize the default canvas by entering **width and height values**.
 
-Question - How to select brush stroke color?
+Question - **How to select brush stroke color?**
 
 Answer - Select your **brush color** and click on **Submit brush** color button. 
 
-Question - Can to download the drawn image?
+Question - **Can to download the drawn image on canvas?**
 
 Answer - Click on the **Download Canvas Image** button to download the drawn image.
 
