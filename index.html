@@ -3,6 +3,11 @@
   <head>
     <link rel="icon" type="image/png" href="whiteboard.png">
     <title>Drawing board</title>
+    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+    <style type='text/css'>
+        #sheet {
+            border:1px solid black;
+        }
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <style type='text/css'>
     body{
@@ -13,7 +18,7 @@
 
     }
     #headpad{
-        padding-left: 1%;
+        padding-left: 5%;
     }
         #sheet {
             border:1px solid black;
@@ -23,15 +28,17 @@
   <body>
     <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
         <div class="column is-1">
-            <figure class="image is-64x64">
+            <figure class="image is-128x128">
                 <img src="whiteboard.png">
             </figure>
         </div>
         <div class="column" id="headpad">
-        <h2 class="title">A hacked-up white board <span></span></h2>
-        <h3 class="subtitle">Draw and save as image/jpeg</h3>
+        <h1 class="title">A hacked-up white board <span></span></h1>
+        <h2 class="subtitle">Draw and save as image/jpeg</h2>
         </div>
     </div>
+      
+    
     <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
         <div class="column">
             <input class="input is-rounded" type="text" id="wid" placeholder="Enter Canvas Width">
@@ -44,12 +51,13 @@
       </div>
         <div class="column">
         <label for="favcolor">Select your brush color:</label>
-        <input type="color" id="favcolor" name="favcolor" value="#33CC99">
+        <input type="color" id="favcolor" name="favcolor" value="#33CC99"><br><br>
         </div>
         <div class="column">
             <button class="button is-primary is-focused" onclick="brushcolor()" type="button">Submit brush color</button>
         </div>
     </div>
+    
     <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
         <div class="column">
         <canvas id="sheet" width="1300" height="475"></canvas>
@@ -60,157 +68,13 @@
             <button class="button is-success is-focused" id='btn-download'>Download Canvas Image</button>
         </div>
     </div>
-    <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
-        <div class="column">
-          <a href="https://github.com/rohitm487/draw">Github source link</a>
-        </div>
-    </div>
-<script type='text/javascript'>
-/*jslint browser:true */
-"use strict";
-var context = document.getElementById('sheet').getContext("2d");
-var canvas = document.getElementById('sheet');
-context = canvas.getContext("2d");
-context.fillStyle = "#FF0000";
-context.strokeStyle = "#000000";
-context.lineJoin = "round";
-context.lineWidth = 5;
-
-var clickX = [];
-var clickY = [];
-var clickDrag = [];
-var paint;
-
-/**
- * Add information where the user clicked at.
- * @param {number} x
- * @param {number} y
- * @return {boolean} dragging
- */
-function addClick(x, y, dragging) {
-    clickX.push(x);
-    clickY.push(y);
-    clickDrag.push(dragging);
-}
-
-/**
- * Redraw the complete canvas.
- */
-function redraw() {
-    // Clears the canvas
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
-    for (var i = 0; i < clickX.length; i += 1) {
-        if (!clickDrag[i] && i == 0) {
-            context.beginPath();
-            context.moveTo(clickX[i], clickY[i]);
-            context.stroke();
-        } else if (!clickDrag[i] && i > 0) {
-            context.closePath();
-
-            context.beginPath();
-            context.moveTo(clickX[i], clickY[i]);
-            context.stroke();
-        } else {
-            context.lineTo(clickX[i], clickY[i]);
-            context.stroke();
+    <script type='text/javascript'>
+        window.onload=function(){
+            var canvas = new fabric.Canvas('sheet');
+            canvas.isDrawingMode = true;
+            canvas.freeDrawingBrush.width = 5;
+            canvas.freeDrawingBrush.color = "#ff0000";
         }
-    }
-}
-
-/**
- * Draw the newly added point.
- * @return {void}
- */
-function drawNew() {
-    var i = clickX.length - 1
-    if (!clickDrag[i]) {
-        if (clickX.length == 0) {
-            context.beginPath();
-            context.moveTo(clickX[i], clickY[i]);
-            context.stroke();
-        } else {
-            context.closePath();
-
-            context.beginPath();
-            context.moveTo(clickX[i], clickY[i]);
-            context.stroke();
-        }
-    } else {
-        context.lineTo(clickX[i], clickY[i]);
-        context.stroke();
-    }
-}
-
-function mouseDownEventHandler(e) {
-    paint = true;
-    var x = e.pageX - canvas.offsetLeft;
-    var y = e.pageY - canvas.offsetTop;
-    if (paint) {
-        addClick(x, y, false);
-        drawNew();
-    }
-}
-
-function touchstartEventHandler(e) {
-    paint = true;
-    if (paint) {
-        addClick(e.touches[0].pageX - canvas.offsetLeft, e.touches[0].pageY - canvas.offsetTop, false);
-        drawNew();
-    }
-}
-
-function mouseUpEventHandler(e) {
-    context.closePath();
-    paint = false;
-}
-
-function mouseMoveEventHandler(e) {
-    var x = e.pageX - canvas.offsetLeft;
-    var y = e.pageY - canvas.offsetTop;
-    if (paint) {
-        addClick(x, y, true);
-        drawNew();
-    }
-}
-
-function touchMoveEventHandler(e) {
-    if (paint) {
-        addClick(e.touches[0].pageX - canvas.offsetLeft, e.touches[0].pageY - canvas.offsetTop, true);
-        drawNew();
-    }
-}
-
-function setUpHandler(isMouseandNotTouch, detectEvent) {
-    removeRaceHandlers();
-    if (isMouseandNotTouch) {
-        canvas.addEventListener('mouseup', mouseUpEventHandler);
-        canvas.addEventListener('mousemove', mouseMoveEventHandler);
-        canvas.addEventListener('mousedown', mouseDownEventHandler);
-        mouseDownEventHandler(detectEvent);
-    } else {
-        canvas.addEventListener('touchstart', touchstartEventHandler);
-        canvas.addEventListener('touchmove', touchMoveEventHandler);
-        canvas.addEventListener('touchend', mouseUpEventHandler);
-        touchstartEventHandler(detectEvent);
-    }
-}
-
-function mouseWins(e) {
-    setUpHandler(true, e);
-}
-
-function touchWins(e) {
-    setUpHandler(false, e);
-}
-
-function removeRaceHandlers() {
-    canvas.removeEventListener('mousedown', mouseWins);
-    canvas.removeEventListener('touchstart', touchWins);
-}
-
-canvas.addEventListener('mousedown', mouseWins);
-canvas.addEventListener('touchstart', touchWins);
     </script>
     <script>
     document.getElementById('btn-download').addEventListener("click", function(e) {
