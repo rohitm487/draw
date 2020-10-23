@@ -8,7 +8,12 @@
             border:1px solid black;
         }
     </style>
-    <script type='text/javascript'>
+    
+  </head>
+  <body>
+    <canvas id="sheet" width="400" height="400"></canvas>
+  </body>
+  <script type='text/javascript'>
         window.onload=function(){
             var canvas = new fabric.Canvas('sheet');
             canvas.isDrawingMode = true;
@@ -16,8 +21,4 @@
             canvas.freeDrawingBrush.color = "#ff0000";
         }
     </script>
-  </head>
-  <body>
-    <canvas id="sheet" width="400" height="400"></canvas>
-  </body>
 </html>
