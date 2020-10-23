@@ -1,74 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="icon" type="image/png" href="whiteboard.png">
-    <title>Drawing board</title>
+    <title>Simple example</title>
     <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
     <style type='text/css'>
         #sheet {
             border:1px solid black;
         }
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <style type='text/css'>
-    body{
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
-
-    }
-    #headpad{
-        padding-left: 5%;
-    }
-        #sheet {
-            border:1px solid black;
-        }
     </style>
+    
   </head>
   <body>
-    <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
-        <div class="column is-1">
-            <figure class="image is-128x128">
-                <img src="whiteboard.png">
-            </figure>
-        </div>
-        <div class="column" id="headpad">
-        <h1 class="title">A hacked-up white board <span></span></h1>
-        <h2 class="subtitle">Draw and save as image/jpeg</h2>
-        </div>
-    </div>
-      
-    
-    <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
-        <div class="column">
-            <input class="input is-rounded" type="text" id="wid" placeholder="Enter Canvas Width">
-          </div>
-          <div class="column">
-            <input class="input is-rounded" type="text" id="hgt" placeholder="Enter Canvas Height">
-          </div>
-      <div class="column">
-        <button class="button is-primary is-focused" onclick="canvasize()" type="button">Resize</button>
-      </div>
-        <div class="column">
-        <label for="favcolor">Select your brush color:</label>
-        <input type="color" id="favcolor" name="favcolor" value="#33CC99"><br><br>
-        </div>
-        <div class="column">
-            <button class="button is-primary is-focused" onclick="brushcolor()" type="button">Submit brush color</button>
-        </div>
-    </div>
-    
-    <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
-        <div class="column">
-        <canvas id="sheet" width="1300" height="475"></canvas>
-        </div>
-    </div>
-    <div class="columns is-variable is-1-mobile is-0-tablet is-3-desktop is-8-widescreen is-2-fullhd">
-        <div class="column">
-            <button class="button is-success is-focused" id='btn-download'>Download Canvas Image</button>
-        </div>
-    </div>
-    <script type='text/javascript'>
+    <canvas id="sheet" width="400" height="400"></canvas>
+  </body>
+  <script type='text/javascript'>
         window.onload=function(){
             var canvas = new fabric.Canvas('sheet');
             canvas.isDrawingMode = true;
@@ -76,52 +21,4 @@
             canvas.freeDrawingBrush.color = "#ff0000";
         }
     </script>
-    <script>
-    document.getElementById('btn-download').addEventListener("click", function(e) {
-    var canvas = document.querySelector('#sheet');
-    //blw - making background white
-    var imgData=context.getImageData(0,0,canvas.width,canvas.height);
-    var data=imgData.data;
-    for(var i=0;i<data.length;i+=4){
-        if(data[i+3]<255){
-            data[i]=255;
-            data[i+1]=255;
-            data[i+2]=255;
-            data[i+3]=255;
-        }
-    }
-    context.putImageData(imgData,0,0);
-//abv - making background white
-    var dataURL = canvas.toDataURL("image/jpeg", 0.1);
-
-    downloadImage(dataURL, 'my-canvas.jpeg');
-});
-
-// Save | Download image
-function downloadImage(data, filename = 'untitled.jpeg') {
-    var a = document.createElement('a');
-    a.href = data;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-}
-    </script>
-    <script>
-    function canvasize() {
-    var widthba = document.getElementById("wid").value;
-    var heightba = document.getElementById("hgt").value;
-    var sheetba = document.getElementById("sheet");
-    sheetba.width = widthba;
-    sheetba.height = heightba;
-    }
-    </script>
-    <script>
-        function brushcolor() {
-        var canvasba = document.getElementById("sheet")
-        contextba = canvasba.getContext("2d");
-        var color_val = document.getElementById("favcolor").value;
-        contextba.strokeStyle = color_val;
-        }
-        </script>
-  </body>
 </html>
