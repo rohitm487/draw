@@ -9,15 +9,33 @@
     </style>
   </head>
   <body>
-      <label for="wid">Width:</label>
-      <input type="text" id="wid">
-      <label for="hgt">Width:</label>
-      <input type="text" id="hgt">
-    <canvas id="sheet" width="1400" height="650"></canvas>
+      
+    <label for="wid">Width:</label>
+    <input type="text" id="wid">
+    <label for="hgt">Height:</label>
+    <input type="text" id="hgt">
     <button onclick="canvasize()" type="button">Resize</button>
+    <label for="brushwidth">BrushWidth:</label>
+    <input type="text" id="brushwidth">
+    <button onclick="brushWidth()" type="button">Resize Brush</button>
+    <label for="favcolor">Select your Brush Color:</label>
+    <input id="brushcolor" type="color" id="favcolor" name="favcolor" value="#ff0000" onchange="colorFunction(this.value)">
+    <img id="image" width="0" height="0" src="img_the_scream.jpg">
+    <label for="img">Select image:</label>
+    <input type="file" id="img" name="img" accept="image/*" >
+    <button onclick ="getImage()" type="submit"> Upload image </button>
+    <button onclick ="imDraw()" type="submit"> Draw image </button>
+    <canvas id="sheet" width="1400" height="650"></canvas>
     <div>
-        <button id='btn-download'>Download Canvas Image</button>
+        <h3>Right click to save image</h3>
     </div>
+    <script>
+        function imDraw() {
+          var context = document.getElementById("sheet").getContext("2d");
+          var img = document.getElementById("image");
+          context.drawImage(img, 10, 10);
+        }
+    </script>
     <script type='text/javascript'>
 /*jslint browser:true */
 "use strict";
@@ -27,7 +45,7 @@ context = canvas.getContext("2d");
 context.fillStyle = "#FF0000";
 context.strokeStyle = "#000000";
 context.lineJoin = "round";
-context.lineWidth = 5;
+context.lineWidth = 10;
 
 var clickX = [];
 var clickY = [];
@@ -196,12 +214,38 @@ function downloadImage(data, filename = 'untitled.jpeg') {
 }
     </script>
     <script>
+        function getImage(){
+            var img = document.getElementById("img").files[0].name;
+            var image = document.getElementById("image");
+            image.src = img
+            }
+        </script>
+    
+    <script>
     function canvasize() {
     var widthba = document.getElementById("wid").value;
     var heightba = document.getElementById("hgt").value;
     var sheetba = document.getElementById("sheet");
     sheetba.width = widthba;
     sheetba.height = heightba;
+    }
+    function brushwidth() {
+        var context = document.getElementById('sheet').getContext("2d");
+        context = canvas.getContext("2d");
+        context.lineWidth = 10;
+    }
+    
+    function colorFunction(val) {
+    var brushcolor = document.getElementById("brushcolor").value
+    var context = document.getElementById('sheet').getContext("2d");
+    context.strokeStyle = brushcolor;
+    }
+    function brushWidth(val) {
+    var brushwidth = document.getElementById("brushwidth").value;
+    console.log(brushWidth);
+    var context = document.getElementById('sheet').getContext("2d");
+    context.lineWidth = brushwidth;
+    console.log(context.lineWidth)
     }
     </script>
   </body>
