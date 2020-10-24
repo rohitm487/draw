@@ -20,27 +20,9 @@
     <button onclick="brushWidth()" type="button">Resize Brush</button>
     <label for="favcolor">Select your Brush Color:</label>
     <input id="brushcolor" type="color" id="favcolor" name="favcolor" value="#ff0000" onchange="colorFunction(this.value)">
-    <img id="image" width="0" height="0" src="img_the_scream.jpg">
-    
-    <form action="POST" data-netlify=true>
-    <label for="img">Select image:</label>
-    <input type="file" id="img" name="img" accept="image/*" >
-    <button type="submit"> Upload image </button>
-    </form>
-    
-    <label for="img">Select image:</label>
-    <button onclick ="imDraw()" type="submit"> Draw image </button>
-    <canvas id="sheet" width="1400" height="650"></canvas>
     <div>
         <h3>Right click to save image</h3>
     </div>
-    <script>
-        function imDraw() {
-          var context = document.getElementById("sheet").getContext("2d");
-          var img = document.getElementById("image");
-          context.drawImage(img, 10, 10);
-        }
-    </script>
     <script type='text/javascript'>
 /*jslint browser:true */
 "use strict";
@@ -218,14 +200,6 @@ function downloadImage(data, filename = 'untitled.jpeg') {
     a.click();
 }
     </script>
-    <script>
-        function getImage(){
-            var img = document.getElementById("img").files[0].name;
-            var image = document.getElementById("image");
-            image.src = img
-            }
-        </script>
-    
     <script>
     function canvasize() {
     var widthba = document.getElementById("wid").value;
