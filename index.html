@@ -9,7 +9,7 @@
     </style>
   </head>
   <body>
-      
+    
     <label for="wid">Width:</label>
     <input type="text" id="wid">
     <label for="hgt">Height:</label>
@@ -21,9 +21,14 @@
     <label for="favcolor">Select your Brush Color:</label>
     <input id="brushcolor" type="color" id="favcolor" name="favcolor" value="#ff0000" onchange="colorFunction(this.value)">
     <img id="image" width="0" height="0" src="img_the_scream.jpg">
+    
+    <form action="POST" data-netlify=true>
     <label for="img">Select image:</label>
     <input type="file" id="img" name="img" accept="image/*" >
-    <button onclick ="getImage()" type="submit"> Upload image </button>
+    <button type="submit"> Upload image </button>
+    </form>
+    
+    <label for="img">Select image:</label>
     <button onclick ="imDraw()" type="submit"> Draw image </button>
     <canvas id="sheet" width="1400" height="650"></canvas>
     <div>
