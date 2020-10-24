@@ -1,24 +1,231 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple example</title>
-    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+    <title>Drawing board</title>
     <style type='text/css'>
         #sheet {
             border:1px solid black;
         }
     </style>
-    
   </head>
   <body>
-    <canvas id="sheet" width="400" height="400"></canvas>
-  </body>
-  <script type='text/javascript'>
-        window.onload=function(){
-            var canvas = new fabric.Canvas('sheet');
-            canvas.isDrawingMode = true;
-            canvas.freeDrawingBrush.width = 5;
-            canvas.freeDrawingBrush.color = "#ff0000";
+    
+    <label for="wid">Width:</label>
+    <input type="text" id="wid">
+    <label for="hgt">Height:</label>
+    <input type="text" id="hgt">
+    <button onclick="canvasize()" type="button">Resize</button>
+    <label for="brushwidth">BrushWidth:</label>
+    <input type="text" id="brushwidth">
+    <button onclick="brushWidth()" type="button">Resize Brush</button>
+    <label for="favcolor">Select your Brush Color:</label>
+    <input id="brushcolor" type="color" id="favcolor" name="favcolor" value="#ff0000" onchange="colorFunction(this.value)">
+    <div>
+        <h3>Right click to save image</h3>
+    </div>
+    <script type='text/javascript'>
+/*jslint browser:true */
+"use strict";
+var context = document.getElementById('sheet').getContext("2d");
+var canvas = document.getElementById('sheet');
+context = canvas.getContext("2d");
+context.fillStyle = "#FF0000";
+context.strokeStyle = "#000000";
+context.lineJoin = "round";
+context.lineWidth = 10;
+
+var clickX = [];
+var clickY = [];
+var clickDrag = [];
+var paint;
+
+/**
+ * Add information where the user clicked at.
+ * @param {number} x
+ * @param {number} y
+ * @return {boolean} dragging
+ */
+function addClick(x, y, dragging) {
+    clickX.push(x);
+    clickY.push(y);
+    clickDrag.push(dragging);
+}
+
+/**
+ * Redraw the complete canvas.
+ */
+function redraw() {
+    // Clears the canvas
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+    for (var i = 0; i < clickX.length; i += 1) {
+        if (!clickDrag[i] && i == 0) {
+            context.beginPath();
+            context.moveTo(clickX[i], clickY[i]);
+            context.stroke();
+        } else if (!clickDrag[i] && i > 0) {
+            context.closePath();
+
+            context.beginPath();
+            context.moveTo(clickX[i], clickY[i]);
+            context.stroke();
+        } else {
+            context.lineTo(clickX[i], clickY[i]);
+            context.stroke();
         }
+    }
+}
+
+/**
+ * Draw the newly added point.
+ * @return {void}
+ */
+function drawNew() {
+    var i = clickX.length - 1
+    if (!clickDrag[i]) {
+        if (clickX.length == 0) {
+            context.beginPath();
+            context.moveTo(clickX[i], clickY[i]);
+            context.stroke();
+        } else {
+            context.closePath();
+
+            context.beginPath();
+            context.moveTo(clickX[i], clickY[i]);
+            context.stroke();
+        }
+    } else {
+        context.lineTo(clickX[i], clickY[i]);
+        context.stroke();
+    }
+}
+
+function mouseDownEventHandler(e) {
+    paint = true;
+    var x = e.pageX - canvas.offsetLeft;
+    var y = e.pageY - canvas.offsetTop;
+    if (paint) {
+        addClick(x, y, false);
+        drawNew();
+    }
+}
+
+function touchstartEventHandler(e) {
+    paint = true;
+    if (paint) {
+        addClick(e.touches[0].pageX - canvas.offsetLeft, e.touches[0].pageY - canvas.offsetTop, false);
+        drawNew();
+    }
+}
+
+function mouseUpEventHandler(e) {
+    context.closePath();
+    paint = false;
+}
+
+function mouseMoveEventHandler(e) {
+    var x = e.pageX - canvas.offsetLeft;
+    var y = e.pageY - canvas.offsetTop;
+    if (paint) {
+        addClick(x, y, true);
+        drawNew();
+    }
+}
+
+function touchMoveEventHandler(e) {
+    if (paint) {
+        addClick(e.touches[0].pageX - canvas.offsetLeft, e.touches[0].pageY - canvas.offsetTop, true);
+        drawNew();
+    }
+}
+
+function setUpHandler(isMouseandNotTouch, detectEvent) {
+    removeRaceHandlers();
+    if (isMouseandNotTouch) {
+        canvas.addEventListener('mouseup', mouseUpEventHandler);
+        canvas.addEventListener('mousemove', mouseMoveEventHandler);
+        canvas.addEventListener('mousedown', mouseDownEventHandler);
+        mouseDownEventHandler(detectEvent);
+    } else {
+        canvas.addEventListener('touchstart', touchstartEventHandler);
+        canvas.addEventListener('touchmove', touchMoveEventHandler);
+        canvas.addEventListener('touchend', mouseUpEventHandler);
+        touchstartEventHandler(detectEvent);
+    }
+}
+
+function mouseWins(e) {
+    setUpHandler(true, e);
+}
+
+function touchWins(e) {
+    setUpHandler(false, e);
+}
+
+function removeRaceHandlers() {
+    canvas.removeEventListener('mousedown', mouseWins);
+    canvas.removeEventListener('touchstart', touchWins);
+}
+
+canvas.addEventListener('mousedown', mouseWins);
+canvas.addEventListener('touchstart', touchWins);
     </script>
+    <script>
+    document.getElementById('btn-download').addEventListener("click", function(e) {
+    var canvas = document.querySelector('#sheet');
+    //blw - making background white
+    var imgData=context.getImageData(0,0,canvas.width,canvas.height);
+    var data=imgData.data;
+    for(var i=0;i<data.length;i+=4){
+        if(data[i+3]<255){
+            data[i]=255;
+            data[i+1]=255;
+            data[i+2]=255;
+            data[i+3]=255;
+        }
+    }
+    context.putImageData(imgData,0,0);
+//abv - making background white
+    var dataURL = canvas.toDataURL("image/jpeg", 0.1);
+
+    downloadImage(dataURL, 'my-canvas.jpeg');
+});
+
+// Save | Download image
+function downloadImage(data, filename = 'untitled.jpeg') {
+    var a = document.createElement('a');
+    a.href = data;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+}
+    </script>
+    <script>
+    function canvasize() {
+    var widthba = document.getElementById("wid").value;
+    var heightba = document.getElementById("hgt").value;
+    var sheetba = document.getElementById("sheet");
+    sheetba.width = widthba;
+    sheetba.height = heightba;
+    }
+    function brushwidth() {
+        var context = document.getElementById('sheet').getContext("2d");
+        context = canvas.getContext("2d");
+        context.lineWidth = 10;
+    }
+    
+    function colorFunction(val) {
+    var brushcolor = document.getElementById("brushcolor").value
+    var context = document.getElementById('sheet').getContext("2d");
+    context.strokeStyle = brushcolor;
+    }
+    function brushWidth(val) {
+    var brushwidth = document.getElementById("brushwidth").value;
+    console.log(brushWidth);
+    var context = document.getElementById('sheet').getContext("2d");
+    context.lineWidth = brushwidth;
+    console.log(context.lineWidth)
+    }
+    </script>
+  </body>
 </html>
